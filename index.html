@@ -342,11 +342,28 @@
 <script>
 let selectedLocation = null;
 
+// ── Baca URL parameter dari Power BI ──────────────────────────
+const params = new URLSearchParams(window.location.search);
+const lineParam = params.get('line');   // ?line=2SSWL001
+const floorParam = params.get('floor'); // ?floor=2
+
+// Tentukan floor awal: dari URL param, atau dari line prefix, atau default 4
+function detectFloor(line) {
+  if (line) {
+    const f = parseInt(line.charAt(0));
+    if (f >= 2 && f <= 4) return f;
+  }
+  return 4;
+}
+
+let activeFloor = floorParam ? parseInt(floorParam) : detectFloor(lineParam);
+
 function switchFloor(floor) {
   document.querySelectorAll('.floor-map').forEach(m => m.classList.remove('active'));
   document.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('floor' + floor).classList.add('active');
   document.querySelectorAll('.floor-btn')[floor - 2].classList.add('active');
+  activeFloor = floor;
   clearSelection();
   attachListeners();
 }
@@ -360,26 +377,28 @@ function clearSelection() {
   document.getElementById('tooltip').style.display = 'none';
 }
 
+function applySelection(loc) {
+  if (!loc) return;
+  selectedLocation = loc;
+  document.querySelectorAll('.svg-location').forEach(el => {
+    if (el.getAttribute('data-location') === loc) {
+      el.classList.add('selected');
+      el.classList.remove('dimmed');
+    } else {
+      el.classList.remove('selected');
+      el.classList.add('dimmed');
+    }
+  });
+  document.getElementById('selectedInfo').innerHTML =
+    'Selected: <span class="selected-badge">' + loc + '</span>';
+}
+
 function attachListeners() {
   document.querySelectorAll('.svg-location').forEach(el => {
-    el.onclick = function(e) {
+    el.onclick = function() {
       const loc = this.getAttribute('data-location');
-      if (selectedLocation === loc) {
-        clearSelection();
-        return;
-      }
-      selectedLocation = loc;
-      document.querySelectorAll('.svg-location').forEach(other => {
-        if (other.getAttribute('data-location') === loc) {
-          other.classList.add('selected');
-          other.classList.remove('dimmed');
-        } else {
-          other.classList.remove('selected');
-          other.classList.add('dimmed');
-        }
-      });
-      document.getElementById('selectedInfo').innerHTML =
-        'Selected: <span class="selected-badge">' + loc + '</span>';
+      if (selectedLocation === loc) { clearSelection(); return; }
+      applySelection(loc);
     };
     el.onmousemove = function(e) {
       const t = document.getElementById('tooltip');
@@ -394,7 +413,12 @@ function attachListeners() {
   });
 }
 
-attachListeners();
+// ── Init: set floor & highlight dari URL param ─────────────────
+switchFloor(activeFloor);
+if (lineParam) applySelection(lineParam);
+
+// ── Polling: cek URL param setiap 500ms (Power BI reload iframe) ─
+// Tidak perlu polling karena Power BI akan reload iframe saat measure berubah
 </script>
 </body>
 </html>
