@@ -413,7 +413,32 @@ function attachListeners() {
   });
 }
 
+
+function attachTextListeners() {
+  document.querySelectorAll('text').forEach(txt => {
+    const label = (txt.textContent || '').trim();
+    if (/^[234]SSW[L|O]\d+$/i.test(label)) {
+      txt.style.cursor = 'pointer';
+      txt.onclick = function() {
+        if (selectedLocation === label) { clearSelection(); return; }
+        applySelection(label);
+      };
+      txt.onmousemove = function(e) {
+        const t = document.getElementById('tooltip');
+        t.textContent = label;
+        t.style.display = 'block';
+        t.style.left = (e.clientX + 12) + 'px';
+        t.style.top = (e.clientY - 28) + 'px';
+      };
+      txt.onmouseleave = function() {
+        document.getElementById('tooltip').style.display = 'none';
+      };
+    }
+  });
+}
+
 // ── Init: set floor & highlight dari URL param ─────────────────
+attachTextListeners();
 switchFloor(activeFloor);
 if (lineParam) applySelection(lineParam);
 
