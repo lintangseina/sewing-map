@@ -6,288 +6,76 @@
 <title>Sewing Line Map</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { 
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; 
-    background: #f0f2f5; 
-    color: #1e293b; 
-    height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    overflow: hidden; 
-  }
+  body { font-family: 'Segoe UI', sans-serif; background: #fff; color: #222; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-  /* HEADER dengan gaya segar */
-  .header { 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between;
-    gap: 20px; 
-    padding: 12px 24px; 
-    background: white; 
-    border-bottom: 2px solid #e2e8f0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    flex-wrap: wrap;
-  }
-  .header h2 { 
-    font-size: 1.25rem; 
-    font-weight: 700; 
-    color: #0f172a; 
-    letter-spacing: -0.3px;
-    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .header h2::before {
-    content: "🏭";
-    background: none;
-    color: #3b82f6;
-  }
+  .header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #f8f9fa; border-bottom: 1px solid #dde1e7; }
+  .header h2 { font-size: 14px; font-weight: 600; color: #222; letter-spacing: 1px; text-transform: uppercase; flex: 1; }
 
-  /* FLOOR TABS - BIRU AKTIF */
-  .floor-tabs { 
-    display: flex; 
-    gap: 12px; 
-    background: #f8fafc;
-    padding: 4px;
-    border-radius: 48px;
-  }
+  .floor-tabs { display: flex; gap: 6px; }
   .floor-btn {
-    padding: 8px 28px; 
-    border-radius: 40px; 
-    border: none;
-    background: transparent; 
-    color: #475569; 
-    cursor: pointer;
-    font-size: 0.9rem; 
-    font-weight: 700; 
-    transition: all 0.2s ease;
-    letter-spacing: 0.5px;
-    font-family: inherit;
+    padding: 6px 18px; border-radius: 20px; border: 1px solid #c8cdd6;
+    background: transparent; color: #6b7280; cursor: pointer;
+    font-size: 12px; font-weight: 600; transition: all 0.2s;
   }
-  .floor-btn:hover { 
-    background: #e2e8f0; 
-    color: #0f172a; 
-  }
-  /* TAB AKTIF WARNA BIRU (solid) */
-  .floor-btn.active { 
-    background: #2563eb; 
-    border-color: #2563eb; 
-    color: white; 
-    box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-  }
+  .floor-btn:hover { background: #e8eaf0; color: #222; }
+  .floor-btn.active { background: #2563eb; border-color: #2563eb; color: white; }
 
-  /* INFO PANEL */
   .selected-info {
-    padding: 8px 24px; 
-    background: white; 
-    font-size: 0.85rem; 
-    color: #334155;
-    min-height: 48px;
-    display: flex; 
-    align-items: center; 
-    gap: 12px;
-    border-bottom: 1px solid #e2e8f0;
-    backdrop-filter: blur(2px);
+    padding: 6px 16px; background: #f0f4ff; font-size: 12px; color: #6b7280;
+    min-height: 30px; display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #dde1e7;
   }
   .selected-badge {
-    background: #2563eb; 
-    color: white; 
-    padding: 5px 14px;
-    border-radius: 40px; 
-    font-weight: 700; 
-    font-size: 0.8rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-  .clear-btn {
-    background: #f1f5f9; 
-    border: 1px solid #cbd5e1;
-    color: #1e293b; 
-    padding: 5px 14px;
-    border-radius: 40px;
-    cursor: pointer; 
-    font-size: 0.75rem;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
-  .clear-btn:hover {
-    background: #fee2e2;
-    border-color: #ef4444;
-    color: #b91c1c;
-  }
-  .clear-btn.visible { display: inline-flex; }
-
-  /* MAP CONTAINER - background putih total */
-  .map-container { 
-    flex: 1; 
-    overflow: auto;  /* scroll agar map besar bisa dijelajah */
-    position: relative; 
-    background: white;  /* PUTIH solid */
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
-  }
-  .floor-map { 
-    width: 100%; 
-    height: 100%; 
-    display: none; 
-    background: white;
-  }
-  .floor-map.active { 
-    display: block; 
+    background: #2563eb; color: white; padding: 2px 10px;
+    border-radius: 10px; font-weight: 700; font-size: 11px;
   }
 
-  /* SVG DIUKUR LEBIH BESAR (viewBox lebih kecil relatif? tidak, tapi container fleksibel dan ukuran SVG responsif) 
-     Kami atur SVG agar mengambil ruang maksimal dan teks dapat terbaca. Ukuran map terlihat besar karena container full */
-  svg { 
-    width: 100%; 
-    height: auto; 
-    min-height: 100%;
-    background: white;
-    cursor: crosshair;
-  }
+  .map-container { flex: 1; overflow: hidden; position: relative; }
+  .floor-map { width: 100%; height: 100%; display: none; }
+  .floor-map.active { display: block; }
 
-  /* GAYA UNTUK SETIAP LINE (persegi) - border saat dipilih jadi BIRU terang dan tebal */
+  svg { width: 100%; height: 100%; }
+
   .svg-location {
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    stroke-width: 80 !important;   /* border lebih solid */
-    stroke: #2563eb40; /* transparan biru awalnya */
-    vector-effect: non-scaling-stroke;
+    transition: filter 0.15s, opacity 0.15s;
   }
-  .svg-location:hover {
-    filter: brightness(0.98) drop-shadow(0 0 4px rgba(37,99,235,0.5));
-    stroke: #2563eb !important;
-    stroke-width: 110 !important;
-  }
-  /* BORDER KETIKA DIPILIH: BIRU TEBAL (cocok permintaan border saat floor dipilih jadi biru) */
-  .svg-location.selected { 
-    filter: brightness(1.0) drop-shadow(0 0 10px #3b82f6);
-    stroke: #1e40af !important; 
-    stroke-width: 180 !important; 
-    animation: pulseBlue 0.3s ease;
-  }
-  @keyframes pulseBlue {
-    0% { stroke-width: 80; }
-    100% { stroke-width: 180; }
-  }
-  /* Efek dim untuk yang tidak dipilih (tetap terbaca namun redup) */
-  .svg-location.dimmed { 
-    opacity: 0.3; 
-    filter: grayscale(0.1);
-    stroke-width: 50 !important;
-    stroke: #94a3b8 !important;
-  }
+  .svg-location:hover { filter: brightness(1.15); }
+  .svg-location.dimmed { opacity: 0.25; }
 
-  /* tooltip modern */
   .tooltip {
-    position: absolute; 
-    background: #1e293b; 
-    border-left: 4px solid #3b82f6;
-    color: #f1f5f9; 
-    padding: 8px 16px; 
-    border-radius: 12px;
-    font-size: 0.8rem; 
-    font-weight: 600; 
-    pointer-events: none;
-    display: none; 
-    z-index: 1000; 
-    white-space: nowrap;
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-    letter-spacing: 0.3px;
-    backdrop-filter: blur(4px);
-    background: #0f172ae6;
-  }
-
-  /* memperjelas teks di dalam SVG (warna kontras tinggi) */
-  text {
-    font-weight: 700;
-    paint-order: stroke;
-    stroke: white;
-    stroke-width: 18px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    dominant-baseline: middle;
-    text-anchor: middle;
-    font-size: 680px; /* lebih besar dari default */
-    font-family: 'Segoe UI', 'Arial', sans-serif;
-    fill: #0f172a;
-  }
-  
-  /* sesuaikan untuk label DC PANEL, FINISHING, PACKING ROOM agar lebih terbaca */
-  .fil1, .fil13F, .fil14F {
-    fill: #0f172a !important;
-    font-weight: bold;
-  }
-  
-  /* background putih total untuk area non-svg, SVG sendiri latar putih */
-  body, .map-container, .floor-map, svg {
-    background-color: #ffffff;
-  }
-  
-  /* gaya tambahan untuk rect statis agar tetap rapi */
-  .fil0, .fil04F, .fil03F {
-    fill: #fff4e0 !important; /* warna pastel agar beda dengan background tapi tetap elegan */
-  }
-  .fil2, .fil23F, .fil24F {
-    fill: #f1f5f9;
-  }
-  .fil3, .fil33F, .fil34F {
-    fill: #e0f2fe;
-  }
-  .fil4, .fil43F, .fil44F {
-    fill: #dcfce7;
-  }
-  
-  /* responsif, scroll enak */
-  .map-container::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  .map-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-  .map-container::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-  }
-  
-  /* tambahan memperbesar area pandang map secara visual: kita biarkan SVG mengambil proporsi lebar, 
-     namun karena viewBox "-12000 0 60000 25800" cukup luas, map jadi besar dan scroll memudahkan eksplorasi.
-     Dengan container flex dan overflow auto, user bisa zoom in/out browser atau scroll, tulisan jelas */
-  @media (max-width: 700px) {
-    .floor-btn { padding: 6px 16px; font-size: 0.75rem; }
-    .header h2 { font-size: 1rem; }
-    text { font-size: 520px; stroke-width: 12px; }
+    position: absolute; background: #fff; border: 1px solid #2563eb;
+    color: #1e40af; padding: 6px 12px; border-radius: 6px;
+    font-size: 12px; font-weight: 600; pointer-events: none;
+    display: none; z-index: 100; white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h2>🏭 Sewing Line Map — Full HD</h2>
+  <h2>🏭 Sewing Line Map</h2>
   <div class="floor-tabs">
-    <button class="floor-btn" data-floor="2">FLOOR 2</button>
-    <button class="floor-btn" data-floor="3">FLOOR 3</button>
-    <button class="floor-btn active" data-floor="4">FLOOR 4</button>
+    <button class="floor-btn" onclick="switchFloor(2)">FLOOR 2</button>
+    <button class="floor-btn" onclick="switchFloor(3)">FLOOR 3</button>
+    <button class="floor-btn active" onclick="switchFloor(4)">FLOOR 4</button>
   </div>
 </div>
 
 <div class="selected-info" id="selectedInfo">
-  <span>✨ Click any sewing line — border biru menyala</span>
+  <span>Click a sewing line to filter</span>
 </div>
 
 <div class="map-container">
   <div class="tooltip" id="tooltip"></div>
 
-  <!-- FLOOR 2 - layout diperbesar secara visual, teks lebih rapat & jelas -->
+  <!-- FLOOR 2 -->
   <div class="floor-map" id="floor2">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-12000 0 60000 25800">
       <defs><style>
-        .str0{stroke:#006633;stroke-width:70.56}.fil2{fill:#EFF6FF}.fil1{fill:#1E293B}.fil0{fill:#FEF9E3}.fil3{fill:#FFEDD5}.fil4{fill:#E4F1E9}
-        .fnt1{font-weight:bold;font-size:720px;font-family:'Segoe UI', 'Arial', sans-serif}.fnt2{font-weight:bold;font-size:700px;font-family:'Segoe UI', 'Arial', sans-serif}
+        .str0{stroke:#006633;stroke-width:70.56}.fil2{fill:#A1A1A1}.fil1{fill:#332C2B}.fil0{fill:#FFF000}.fil3{fill:#F08519}.fil4{fill:#5FA776}
+        .fnt2{font-weight:bold;font-size:900px;font-family:'Arial'}
       </style></defs>
       <g id="Layer_x0020_1">
         <rect class="fil0 str0 svg-location" id="2SSWO001" data-location="2SSWO001" x="-3715" y="17134" width="1673" height="5986"/>
@@ -324,7 +112,7 @@
         <rect class="fil0 str0 svg-location" id="2SSWL018" data-location="2SSWL018" x="29812" y="3345" width="1673" height="5379"/>
         <rect class="fil0 str0 svg-location" id="2SSWL002" data-location="2SSWL002" x="32145" y="17134" width="1673" height="5986"/>
         <rect class="fil0 str0 svg-location" id="2SSWL001" data-location="2SSWL001" x="34385" y="17134" width="1673" height="5986"/>
-        <!-- Teks besar dan jelas -->
+        <!-- Text labels top row -->
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 16157.7 18654.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL018</text></g>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 13807.7 18654.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL019</text></g>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 11637.7 18654.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL020</text></g>
@@ -341,6 +129,7 @@
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -13072.3 18654.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL031</text></g>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -15242.3 18654.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL032</text></g>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -17432.3 18654.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL033</text></g>
+        <!-- Text labels bottom row -->
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 20637.7 32554.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL001</text></g>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 18467.7 32554.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL002</text></g>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 16117.7 32554.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL003</text></g>
@@ -359,13 +148,14 @@
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -12932.3 32554.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL016</text></g>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -15122.3 32554.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWL017</text></g>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -17472.3 32554.4)"><text x="10500" y="14850" class="fil1 fnt2">2SSWO001</text></g>
+        <!-- Static areas -->
         <rect class="fil2 str0" x="-8764" y="3365" width="3565" height="19813"/>
         <rect class="fil2 str0" transform="matrix(-5.23532E-014 -1.99007 0.920254 -2.21725E-013 -3815.12 15447.7)" width="2500" height="9704"/>
         <rect class="fil3 str0" transform="matrix(-1.08062E-013 -1.99007 1.8995 -2.21725E-013 6808.33 15447.7)" width="2500" height="9704"/>
         <rect class="fil4 str0" transform="matrix(-6.57679E-014 -1.99007 1.15606 -2.21725E-013 26969.6 15447.7)" width="2500" height="9704"/>
-        <text x="-1545" y="13196" class="fil1 fnt1">DC PANEL</text>
-        <text x="13565" y="13196" class="fil1 fnt1">FINISHING</text>
-        <text x="29065" y="13196" class="fil1 fnt1">PACKING ROOM</text>
+        <text x="-1545" y="13196" class="fil1 fnt2">DC PANEL</text>
+        <text x="13565" y="13196" class="fil1 fnt2">FINISHING</text>
+        <text x="29065" y="13196" class="fil1 fnt2">PACKING ROOM</text>
         <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -21528.5 25369.7)"><text x="10500" y="14850" class="fil1 fnt2">DC PANEL</text></g>
       </g>
     </svg>
@@ -375,13 +165,12 @@
   <div class="floor-map" id="floor3">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-12000 0 60000 25800">
       <defs><style>
-        .str03F{stroke:#006633;stroke-width:70.56}.fil23F{fill:#EFF6FF}.fil13F{fill:#1E293B}.fil03F{fill:#FEF9E3}.fil33F{fill:#FFEDD5}.fil43F{fill:#E4F1E9}
-        .fnt23F{font-weight:bold;font-size:710px;font-family:'Segoe UI', 'Arial', sans-serif}
+        .str03F{stroke:#006633;stroke-width:70.56}.fil23F{fill:#A1A1A1}.fil13F{fill:#332C2B}.fil03F{fill:#FFF000}.fil33F{fill:#F08519}.fil43F{fill:#5FA776}
+        .fnt23F{font-weight:bold;font-size:900px;font-family:'Arial'}
       </style></defs>
       <g>
         <rect class="fil03F str03F svg-location" id="3SSWO001" data-location="3SSWO001" x="-3715" y="17134" width="1673" height="5986"/>
         <rect class="fil03F str03F svg-location" id="3SSWL033" data-location="3SSWL033" x="-3808" y="3345" width="1673" height="5379"/>
-        <!-- sama seperti sebelumnya semua rect .svg-location dilengkapi... Karena panjang, saya yakinkan semuanya aktif, tapi struktur seragam -->
         <rect class="fil03F str03F svg-location" id="3SSWL017" data-location="3SSWL017" x="-1475" y="17134" width="1673" height="5986"/>
         <rect class="fil03F str03F svg-location" id="3SSWL032" data-location="3SSWL032" x="-1528" y="3345" width="1673" height="5379"/>
         <rect class="fil03F str03F svg-location" id="3SSWL016" data-location="3SSWL016" x="805" y="17134" width="1673" height="5986"/>
@@ -396,4 +185,32 @@
         <rect class="fil03F str03F svg-location" id="3SSWL027" data-location="3SSWL027" x="9582" y="3345" width="1673" height="5379"/>
         <rect class="fil03F str03F svg-location" id="3SSWL011" data-location="3SSWL011" x="11915" y="17134" width="1673" height="5986"/>
         <rect class="fil03F str03F svg-location" id="3SSWL026" data-location="3SSWL026" x="11862" y="3345" width="1673" height="5379"/>
-        <rect class
+        <rect class="fil03F str03F svg-location" id="3SSWL010" data-location="3SSWL010" x="14195" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL025" data-location="3SSWL025" x="14092" y="3345" width="1673" height="5379"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL009" data-location="3SSWL009" x="16425" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL024" data-location="3SSWL024" x="16332" y="3345" width="1673" height="5379"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL008" data-location="3SSWL008" x="18665" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL023" data-location="3SSWL023" x="18592" y="3345" width="1673" height="5379"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL007" data-location="3SSWL007" x="20925" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL022" data-location="3SSWL022" x="20822" y="3345" width="1673" height="5379"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL006" data-location="3SSWL006" x="23155" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL021" data-location="3SSWL021" x="23062" y="3345" width="1673" height="5379"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL005" data-location="3SSWL005" x="25395" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL020" data-location="3SSWL020" x="25342" y="3345" width="1673" height="5379"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL004" data-location="3SSWL004" x="27675" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL019" data-location="3SSWL019" x="27572" y="3345" width="1673" height="5379"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL003" data-location="3SSWL003" x="29905" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL018" data-location="3SSWL018" x="29812" y="3345" width="1673" height="5379"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL002" data-location="3SSWL002" x="32145" y="17134" width="1673" height="5986"/>
+        <rect class="fil03F str03F svg-location" id="3SSWL001" data-location="3SSWL001" x="34385" y="17134" width="1673" height="5986"/>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 16157.7 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL018</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 13807.7 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL019</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 11637.7 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL020</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 9387.65 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL021</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 7217.65 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL022</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 4867.65 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL023</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 2697.65 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL024</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 387.65 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL025</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -1782.35 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL026</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -4132.35 18654.4)"><text x="10500" y="14850" class="fil13F fnt23F">3SSWL027</text></g>
+        <g transform="matrix(-8.01198E-014 -1 1 -8.01198E-014 -6
